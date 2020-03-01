@@ -1,0 +1,95 @@
+#mine{
+    margin: 50px aoto;
+}
+.level{
+    text-align: center;
+    margin-bottom: 10px;
+}
+.level button{
+    width:6%;
+    margin-right: 15px;
+    background-color: rgb(0,128,128);
+    border: none;
+    border-radius: 3px;
+    color: white;
+    font-size: 14px;
+    outline: none;
+    cursor: pointer;
+}
+.level button.active{
+    background-color: rgb(3, 102, 102);
+}
+table{
+    border-spacing: 1px;
+    background: #929196;
+    margin:0 auto;
+
+}
+td{
+    padding:0;
+    width: 14px;
+    height: 14px;
+    background-color: #ccc;
+    border: 2px solid;
+    border-color:  #fff #a1a1a1 #a1a1a1 #fff;   
+    text-align: center;
+    line-height: 13px;
+    font-weight: bold;
+}
+p{
+    margin-top: 10px;
+    text-align: center;
+}
+.boom{
+    background: #d9d9d9 url(../img/bomb.png) no-repeat center;
+    background-size: cover;
+}
+.flag{
+    background: #ccc url(../img/flag.png) no-repeat center;
+    background-size: cover;
+}
+td.zero{
+    border-color: #d9d9d9;
+    background: #d9d9d9 ;
+    color: #d9d9d9;
+}
+td.one{
+    border-color: #d9d9d9;
+    background: #d9d9d9 ;
+    color: #2622f1;
+}
+td.two{
+    border-color: #d9d9d9;
+    background: #d9d9d9 ;
+    color: green;
+}
+td.three{
+    border-color: #d9d9d9;
+    background: #d9d9d9 ;
+    color: #fd0fe9;
+}
+td.four{
+    border-color: #d9d9d9;
+    background: #d9d9d9 ;
+    color: #d3140d;
+}
+td.five{
+    border-color: #d9d9d9;
+    background: #d9d9d9 ;
+    color: #e9fa03;
+}
+td.six{
+    border-color: #d9d9d9;
+    background: #d9d9d9 ;
+    color: #1a0325;
+}
+td.seven{
+    border-color: #d9d9d9;
+    background: #d9d9d9 ;
+    color: #df5f15;
+}
+td.eight{
+    border-color: #d9d9d9;
+    background: #d9d9d9 ;
+    color: #fa037e;
+}
