@@ -1,11 +1,11 @@
-function Mine(tr,td,Num){
+function Mine(tr,td,num){
     this.tr = tr;
     this.td = td;
-    this.Num = Num; //雷的数量
+    this.num = num; //雷的数量
 
     this.squares = [];  // 二维数组
     this.tds= [];   //存取单元格的DOM对象
-    this.surplusMine = Num; //  剩余雷的数量
+    this.surplusMine = num; //  剩余雷的数量
     this.allRight = false;
     this.parent = document.querySelector('.game-box');
 }
@@ -39,6 +39,7 @@ Mine.prototype.createDom = function(){
         }
         table.appendChild(domTr);
     }
+    this.parent.innerHTML = '';     //避免多次点击创建多个
     this.parent.appendChild(table);
 };
 
@@ -49,7 +50,7 @@ Mine.prototype.randomNum = function(){
         square[i] = i
     }
     square.sort(function(){ return 0.5-Math.random()});
-    return square.slice(0,this.Num);
+    return square.slice(0,this.num);
 };
 
 //找某方格周围的所有方格
@@ -99,6 +100,7 @@ Mine.prototype.updateNum = function(){
 Mine.prototype.init=function(){
     var rn = this.randomNum();      //雷在格子里的位置
     var n = 0;  //找到格子对应的索引
+    var NUM = this.num;
     for (var i = 0; i < this.tr; i++){
         this.squares[i] = [];
         for(var j = 0; j <this.td; j++){
@@ -112,16 +114,20 @@ Mine.prototype.init=function(){
         }
         
     }
-    this.parent.oncontextmenu = function(){ // 阻止右键
-        return false;
-    };
     this.updateNum();
     this.createDom();
 
+    this.parent.oncontextmenu = function(){ // 阻止右键
+            return false;
+    };
+    //剩余雷数
+    this.mineNumDom = document.querySelector('.num');
+    this.mineNumDom.innerHTML = this.surplusMine;
 };
 
 Mine.prototype.play=function(ev,obj){
-    if(ev.which == 1){
+    var This = this;
+    if(ev.which == 1 && obj.className!= 'flag'){
         var curSquare = this.squares[obj.pos[0]][obj.pos[1]];
         var cl = ['zero','one','two','three','four','five','six','seven','eight'];
 
@@ -129,19 +135,96 @@ Mine.prototype.play=function(ev,obj){
             obj.innerHTML = curSquare.value;
             obj.className = cl[curSquare.value]
             if(curSquare.value == 0){
-                obj.className = cl[0]
+                obj.className = cl[0];
                 function getAllZero(square){
-                    this.getAround
+                    var around = This.getAround(square);    //找到了周围的n个格子
+                    for(var i = 0; i< around.length; i++){
+                        var x = around[i][0];
+                        var y = around[i][1];
+
+                        This.tds[x][y].className = cl[This.squares[x][y].value];
+                        
+                        if(This.squares[x][y].value == 0){      //  周围数字为0
+                            if(!This.tds[x][y].check){
+                                This.tds[x][y].check = true;
+                                getAllZero(This.squares[x][y]);
+                            }
+                        }else{      //  周围数字不为0
+                            This.tds[x][y].innerHTML = This.squares[x][y].value;
+                        }
+                    }
                 }
+                getAllZero(curSquare)
             }
         }else{
-            console.log('boom!!')
+            this.gameOver(obj);
         }
+    } 
+    if (ev.which == 3){
+        if(obj.className && obj.className != 'flag'){
+            return ;
+        }
+        obj.className = obj.className=='flag'?'' : 'flag';
+
+        if(this.squares[obj.pos[0]][obj.pos[1]].type == 'boom'){
+            this.allRight = true;
+        }else{
+            this.allRight = false;
+        }
+        if(obj.className == 'flag'){
+            this.mineNumDom.innerHTML = --this.surplusMine;
+        }else{
+            this.mineNumDom.innerHTML = ++this.surplusMine;
+        }
+        if(this.surplusMine == 0){
+            if (this.allRight){
+                alert("congratulations   恭喜你，排雷成功!")
+            }else{
+                alert("回去再练练吧！")
+                this.gameOver
+            }
+        }
+        
     }
-    
 }
 
-var mine = new Mine(28,28,199)
-mine.init();
+Mine.prototype.gameOver = function(clickTd){
+    for (i = 0; i < this.tr; i ++){
+        for( var j = 0 ; j < this.td; j++){
+            if(this.squares[i][j].type == 'boom'){
+                this.tds[i][j].className = 'boom';
+
+            }
+            this.tds[i][j].onmousedown=null;  
+        }
+    }
+    if (clickTd){
+        clickTd.style.backgroundColor = 'red';
+
+    }
+}
+
+//改变button功能
+var btns = document.querySelectorAll('.level button')
+var mine = null;
+var ln = 0; //当前选中的状态
+var arr = [[9,9,10],[16,16,40],[28,28,99]];
+
+for (let i = 0 ; i < btns.length-1; i++){
+    btns[i].onclick = function(){
+        btns[ln].className='';
+        this.className = 'active';
+
+        mine = new Mine(...arr[i]);
+        mine.init();
+        ln = i;
+    }
+}
+btns[0].onclick();  //初始化最简单的
+// btns[3].onclick = function(){
+//     mine.init();
+// }
+// var mine = new Mine(29,29,100)
+// mine.init();
 
 //console.log(mine.getAround(mine.squares[1][1]));
